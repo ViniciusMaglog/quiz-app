@@ -14,12 +14,11 @@ export default function HomePage() {
       </div>
 
       <h1 className="text-4xl font-black text-[#025E65] italic uppercase tracking-tighter leading-none mb-4">
-        Sistema de Avaliação <br /> <span className="text-[#F37B21]">MagLog</span>
+        Sistema de Avaliação <br /> <span className="text-[#F37B21]"></span>
       </h1>
       
       <p className="max-w-md text-gray-400 font-medium mb-12">
-        Plataforma restrita para processos seletivos técnicos. 
-        Se você é um candidato, utilize o link enviado pelo seu recrutador.
+        Plataforma restrita para testes técnicos. 
       </p>
 
       {/* Botão de Acesso do Gestor - Discreto mas funcional */}
