@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/Button";
-import { useRouter } from "next/navigation"; // CORREÇÃO: Importação correta do hook
+import { useRouter } from "next/navigation";
 import { QuizService } from "@/services/quizService";
 
 export default function ListaDeTestes() {
   const [testes, setTestes] = useState<any[]>([]);
-  const router = useRouter(); // Inicialização correta do roteador
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchTestes = async () => {
@@ -18,6 +19,7 @@ export default function ListaDeTestes() {
         .order("created_at", { ascending: false });
 
       if (data) setTestes(data);
+      setLoading(false);
     };
     fetchTestes();
   }, []);
@@ -28,7 +30,6 @@ export default function ListaDeTestes() {
     if (confirmar) {
       try {
         await QuizService.deleteQuiz(id);
-        // Atualiza a lista local removendo o item excluído
         setTestes(prev => prev.filter(t => t.id !== id));
         alert("Teste removido com sucesso!");
       } catch (err) {
@@ -43,42 +44,61 @@ export default function ListaDeTestes() {
     alert("Link do teste copiado! Agora é só enviar para o candidato.");
   };
 
+  if (loading) return (
+    <div className="h-screen flex items-center justify-center bg-gray-50 text-[#025E65] font-black animate-pulse italic uppercase">
+      Carregando Configurações...
+    </div>
+  );
+
   return (
-    <main className="min-h-screen bg-gray-50 p-6 md:p-12">
+    <main className="min-h-screen bg-gray-100 p-6 md:p-12">
       <div className="max-w-5xl mx-auto">
-        <header className="flex justify-between items-center mb-10">
+        
+        {/* HEADER PADRONIZADO */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <div>
-            <h1 className="text-3xl font-black text-[#025E65] italic uppercase tracking-tighter">Meus Testes</h1>
-            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Gerenciamento de Links de Avaliação</p>
+            <h1 className="text-3xl font-black text-[#025E65] italic uppercase tracking-tighter leading-none">Meus Testes</h1>
+            <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-1 italic">Gestão de Links e Avaliações Técnicas</p>
           </div>
 
           <div className="flex gap-3">
-            <Button variant="ghost" onClick={() => router.push("/dashboard")}>
-              Painel Geral
+            <Button variant="ghost" onClick={() => router.push("/dashboard")} className="py-2 text-[10px]">
+              ← Painel Geral
             </Button>
-            <Button variant="secondary" onClick={() => router.push("/dashboard/testes/novo")}>
+            <Button variant="secondary" onClick={() => router.push("/dashboard/testes/novo")} className="py-2 text-[10px]">
               + Criar Novo Teste
             </Button>
           </div>
         </header>
 
-        <div className="grid gap-4">
+        {/* LISTAGEM COM BORDAS LATERAIS */}
+        <div className="grid gap-6">
           {testes.length > 0 ? (
             testes.map(teste => (
-              <div key={teste.id} className="bg-white p-6 rounded-3xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center border border-gray-100 group hover:shadow-md transition-all">
-                <div className="mb-4 md:mb-0">
-                  <h2 className="font-black text-[#025E65] text-xl uppercase italic leading-tight">{teste.nome}</h2>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Link Ativo:</span>
-                    <code className="text-[10px] bg-gray-50 text-[#F37B21] px-2 py-0.5 rounded font-bold">/fazer-teste/{teste.slug}</code>
+              <div 
+                key={teste.id} 
+                className="bg-white p-8 rounded-[32px] shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center border-l-[12px] border-[#F37B21] group hover:shadow-md transition-all"
+              >
+                <div className="mb-6 lg:mb-0">
+                  <h2 className="font-black text-[#025E65] text-2xl uppercase italic leading-none">{teste.nome}</h2>
+                  <div className="flex flex-wrap items-center gap-3 mt-3">
+                    <div className="flex items-center gap-1">
+                      <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Link Ativo:</span>
+                      <code className="text-[10px] bg-gray-50 text-[#F37B21] px-2 py-1 rounded-lg font-bold border border-gray-100 italic">
+                        /fazer-teste/{teste.slug}
+                      </code>
+                    </div>
+                    <span className="text-[9px] font-black text-gray-300 uppercase bg-gray-50 px-2 py-1 rounded-lg">
+                      ⏱ {teste.tempo_total || 60}s
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex gap-2 w-full md:w-auto">
+                <div className="flex flex-wrap gap-2 w-full lg:w-auto">
                   <Button
                     variant="primary"
                     onClick={() => copiarLink(teste.slug)}
-                    className="flex-1 md:flex-none"
+                    className="flex-1 lg:flex-none py-3 text-[10px]"
                   >
                     🔗 Copiar Link
                   </Button>
@@ -86,16 +106,15 @@ export default function ListaDeTestes() {
                   <Button
                     variant="ghost"
                     onClick={() => router.push(`/dashboard/perguntas?quiz_id=${teste.id}`)}
-                    className="flex-1 md:flex-none border-gray-100"
+                    className="flex-1 lg:flex-none py-3 text-[10px] border-gray-200"
                   >
-                    ⚙️ Perguntas
+                    ⚙️ Questões
                   </Button>
 
-                  {/* BOTÃO DE EXCLUSÃO */}
                   <Button
-                    variant="ghost"
+                    variant="delete"
                     onClick={() => handleExcluirTeste(teste.id, teste.nome)}
-                    className="flex-1 md:flex-none"
+                    className="flex-1 lg:flex-none py-3 text-[10px]"
                   >
                     🗑️ Excluir
                   </Button>
@@ -103,14 +122,17 @@ export default function ListaDeTestes() {
               </div>
             ))
           ) : (
-            <div className="bg-white p-20 rounded-3xl border-2 border-dashed border-gray-100 text-center">
-              <p className="text-gray-300 font-black uppercase text-sm tracking-widest italic">
+            /* ESTADO VAZIO PADRONIZADO */
+            <div className="bg-white p-20 rounded-[40px] border-t-[12px] border-[#025E65] shadow-sm text-center">
+              <div className="bg-gray-50 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <span className="text-4xl grayscale opacity-30">📁</span>
+              </div>
+              <p className="text-gray-400 font-black uppercase text-xs tracking-[0.3em] italic mb-6">
                 Nenhum teste configurado ainda.
               </p>
               <Button
                 variant="secondary"
                 onClick={() => router.push("/dashboard/testes/novo")}
-                className="mt-4"
               >
                 Criar meu primeiro teste
               </Button>
@@ -118,9 +140,9 @@ export default function ListaDeTestes() {
           )}
         </div>
 
-        <footer className="mt-12 text-center">
-          <p className="text-gray-300 text-[10px] font-bold uppercase tracking-[0.3em]">
-            Sistema de Gestão de Provas v3.0
+        <footer className="mt-16 text-center border-t border-gray-200 pt-8">
+          <p className="text-gray-300 text-[10px] font-black uppercase tracking-[0.5em]">
+            @2024 QuizApp - Todos os direitos reservados.
           </p>
         </footer>
       </div>

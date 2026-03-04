@@ -1,5 +1,5 @@
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost'| 'delete';
 }
 
 export const Button = ({ children, variant = 'primary', className, ...props }: ButtonProps) => {
@@ -9,7 +9,8 @@ export const Button = ({ children, variant = 'primary', className, ...props }: B
     secondary: "bg-[#F37B21] hover:bg-[#d66a1a]",
     success: "bg-green-600 hover:bg-green-700",
     danger: "bg-red-500 hover:bg-red-600",
-    ghost: "bg-transparent border border-gray-200 text-gray-400 hover:text-red-500"
+    ghost: "bg-transparent border border-gray-200 text-gray-400 hover:text-red-500",
+    delete: "bg-red-300 hover:bg-red-400 text-white"
   };
 
   const bgColor = variants[variant];

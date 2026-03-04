@@ -1,10 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  /* Definindo as cores que você solicitou */
   --color-primary: rgb(2, 94, 101);
   --color-secondary: rgb(243, 123, 33);
-  --color-background: #f5f5f5;
+  --color-background: #f7f7f7;
 }
 
 :root {

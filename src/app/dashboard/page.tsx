@@ -53,7 +53,7 @@ export default function DashboardPage() {
     });
   }, [results, busca, filtroTeste]);
 
-  // --- FUNÇÃO DE EXPORTAÇÃO RESTAURADA ---
+  // --- FUNÇÃO DE EXPORTAÇÃO ---
   const exportarRelatorio = () => {
     if (resultadosFiltrados.length === 0) return;
     const headers = ["Candidato", "Teste", "Score", "Data"];
@@ -85,22 +85,21 @@ export default function DashboardPage() {
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
             <h1 className="text-3xl font-black text-[#025E65] italic tracking-tighter uppercase leading-none">Painel de Gestão</h1>
-            <p className="text-gray-400 font-bold text-[9px] uppercase tracking-[0.3em] mt-1">Vinicius • Logística & Excel PRO</p>
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={exportarRelatorio} className="py-2 text-[10px]">📥 Exportar</Button>
             <Button variant="secondary" onClick={() => router.push("/dashboard/testes")} className="py-2 text-[10px]">📂 Gerenciar Testes</Button>
-            <Button variant="ghost" onClick={async () => { await supabase.auth.signOut(); router.push("/"); }} className="py-2 text-[10px]">Sair</Button>
+            <Button variant="delete" onClick={async () => { await supabase.auth.signOut(); router.push("/"); }} className="py-2 text-[10px]">Sair</Button>
           </div>
         </header>
 
-        {/* FILTROS COMPACTOS E FUNCIONAIS */}
-        <section className="flex flex-col md:flex-row gap-3 mb-8 bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
+        {/* FILTROS PADRONIZADOS (Borda Lateral Laranja) */}
+        <section className="bg-white rounded-[24px] p-4 mb-8 shadow-sm border-l-[12px] border-[#F37B21] flex flex-col md:flex-row gap-3">
           <div className="flex-1">
             <input 
               type="text" 
               placeholder="🔍 PESQUISAR CANDIDATO..." 
-              className="w-full p-3 bg-gray-50 rounded-xl font-bold text-[11px] uppercase outline-none focus:border-[#025E65] border-2 border-transparent transition-all"
+              className="w-full p-3 bg-gray-50 rounded-xl font-bold text-[11px] uppercase outline-none focus:bg-white focus:border-[#025E65] border-2 border-transparent transition-all"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
             />
@@ -115,17 +114,16 @@ export default function DashboardPage() {
               {statsPorQuiz.map((s: any) => <option key={s.nome} value={s.nome}>{s.nome}</option>)}
             </select>
             {filtroTeste !== "todos" && (
-              <button onClick={() => setFiltroTeste("todos")} className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-red-500 uppercase">✖</button>
+              <button onClick={() => setFiltroTeste("todos")} className="absolute right-10 top-1/2 -translate-y-1/2 text-[10px] font-black text-red-500 uppercase">✖</button>
             )}
           </div>
         </section>
 
-        {/* CARDS COM ROLAGEM E PADDING PARA NÃO CORTAR */}
+        {/* CARDS PADRONIZADOS (Borda Superior Azul) */}
         <section className="mb-10 relative">
           <div className="flex justify-between items-center mb-4 px-2">
-            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">Performance por Unidade</h3>
+            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">Performance por Avaliação</h3>
           </div>
-          {/* O padding-x (px-4) e padding-bottom (pb-4) impedem que o card "morra" na borda ou esconda a sombra */}
           <div className="flex gap-6 overflow-x-auto px-2 pb-6 snap-x no-scrollbar">
             {statsPorQuiz.map((item: any) => {
               const ativo = filtroTeste === item.nome;
@@ -133,8 +131,8 @@ export default function DashboardPage() {
                 <div 
                   key={item.nome} 
                   onClick={() => setFiltroTeste(ativo ? "todos" : item.nome)}
-                  className={`min-w-[240px] p-6 rounded-[32px] shadow-sm border-2 transition-all cursor-pointer snap-start flex flex-col justify-between h-36 ${
-                    ativo ? 'bg-white border-[#F37B21] scale-105 z-10' : 'bg-white border-transparent opacity-80 hover:opacity-100'
+                  className={`min-w-[200px] p-6 bg-white rounded-[32px] shadow-sm border-t-[10px] transition-all cursor-pointer snap-start flex flex-col justify-between h-28 ${
+                    ativo ? 'border-[#F37B21] scale-105 z-10' : 'border-[#025E65] opacity-80 hover:opacity-100'
                   }`}
                 >
                   <h4 className="text-[#025E65] font-black uppercase italic truncate text-[13px] leading-tight">{item.nome}</h4>
@@ -151,8 +149,8 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* TABELA VERTICAL COM STICKY HEADER */}
-        <section className="bg-white rounded-[40px] shadow-sm border border-gray-100 overflow-hidden">
+        {/* TABELA PADRONIZADA (Borda Superior Azul) */}
+        <section className="bg-white rounded-[40px] shadow-sm border-t-[12px] border-[#025E65] overflow-hidden">
           <div className="p-5 border-b border-gray-50 flex justify-between items-center bg-gray-50/20">
             <h2 className="font-black text-[#025E65] uppercase italic text-xs">Resultados Recentes</h2>
             <span className="text-[10px] font-black text-gray-400 uppercase bg-white px-3 py-1 rounded-full border border-gray-100">
@@ -177,7 +175,7 @@ export default function DashboardPage() {
                     onClick={() => router.push(`/dashboard/resultado/${res.id}`)}
                     className="hover:bg-gray-50 transition-all group cursor-pointer"
                   >
-                    <td className="p-6 font-black text-gray-700 group-hover:text-[#F37B21] uppercase text-xs">{res.user_name}</td>
+                    <td className="p-6 font-black text-gray-700 group-hover:text-[#F37B21] uppercase text-xs transition-colors">{res.user_name}</td>
                     <td className="p-6">
                       <span className="text-[9px] font-black text-gray-400 uppercase bg-gray-50 border border-gray-100 px-3 py-1 rounded-lg">
                         {res.quizzes?.nome}
